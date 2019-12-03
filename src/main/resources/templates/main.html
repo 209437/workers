@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/thymeleaf-extras-springsecurity3"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <title>Vcard Creator</title>
+</head>
+<body>
+
+
+
+<table>
+    <thead>
+    <tr>
+        <th> id </th>
+        <th> Imie </th>
+        <th> Nazwisko </th>
+    </tr>
+    </thead>
+    <tbody>
+    <tr th:each="worker : ${workersList}">
+        <td><span th:text="${worker.id}"> id </span></td>
+        <td><span th:text="${worker.surname}"> Imie </span></td>
+        <td><span th:text="${worker.name}"> Nazwisko </span></td>
+        <td>
+            <form th:action="@{'/createVCard/{id}'(id=${worker.id})}">
+                <button type="submit"> Create VCard</button>
+            </form>
+        </td>
+    </tr>
+    </tbody>
+</table>
+
+</body>
+</html>
