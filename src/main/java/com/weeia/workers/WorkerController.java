@@ -1,16 +1,23 @@
 package com.weeia.workers;
 
+import ezvcard.Ezvcard;
+import ezvcard.VCard;
+import ezvcard.VCardVersion;
+import ezvcard.property.StructuredName;
+import org.apache.tomcat.util.http.fileupload.IOUtils;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.servlet.http.HttpServletResponse;
+import java.io.*;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -78,4 +85,40 @@ public class WorkerController {
             e.printStackTrace();
         }
     }
+
+
+    @GetMapping("/createVCard/{id}")
+    public String createVCard(@PathVariable Integer id, Model model, HttpServletResponse httpServletResponse) {
+        for (WorkerModel worker : workers) {
+            if (worker.getId()==id){
+                VCard vcard = new VCard();
+                StructuredName n = new StructuredName();
+                n.setFamily(worker.getName());
+                n.setGiven(worker.getSurname());
+                n.getPrefixes().add(worker.getTitle());
+                vcard.setStructuredName(n);
+                vcard.setOrganization(worker.getInstitute());
+
+                String str = Ezvcard.write(vcard).version(VCardVersion.V4_0).go();
+                try {
+                    String path = "vCard_"+worker.getSurname()+".vcf";
+                    vcard.write(new File(path));
+
+                    File fileToDownload = new File(path);
+                    InputStream inputStream = new FileInputStream(fileToDownload);
+                    httpServletResponse.addHeader("Content-Type", new MediaType("application", "force-download", StandardCharsets.UTF_8).toString());
+                    httpServletResponse.setContentType("application/force-download");
+                    httpServletResponse.setHeader("Content-Disposition", "attachment; filename="+path);
+                    IOUtils.copy(inputStream, httpServletResponse.getOutputStream());
+                    httpServletResponse.flushBuffer();
+                    inputStream.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        model.addAttribute("workersList", workers);
+        return "main";
+    }
+
 }
