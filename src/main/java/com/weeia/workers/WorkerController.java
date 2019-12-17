@@ -36,7 +36,6 @@ public class WorkerController {
         return "search";
     }
 
-
     @RequestMapping(value = "/getWorkers/inName", params = "inName")
     public String getDetailsAboutString(@RequestParam String inName, Model model) {
         try {
