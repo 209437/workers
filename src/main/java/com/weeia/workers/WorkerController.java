@@ -11,6 +11,8 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
@@ -25,25 +27,32 @@ import java.util.List;
 public class WorkerController {
     private java.net.URL URL;
     private List<WorkerModel> workers;
+    private String inName;
+
+    @RequestMapping("/")
+    public String getDetailsAboutString() {
+        ModelAndView mv = new ModelAndView("book/form");
+        mv.addObject("work", new WorkerModel());
+        return "search";
+    }
 
 
-
-    @RequestMapping("/getWorkers/{name}")
-    public String getDetailsAboutString(@PathVariable String name, Model model) {
+    @RequestMapping(value = "/getWorkers/inName", params = "inName")
+    public String getDetailsAboutString(@RequestParam String inName, Model model) {
         try {
             workers = new ArrayList<>();
-            URL = new URL("https://adm.edu.p.lodz.pl/user/users.php?search="+name);
-            sendRequest();
-            model.addAttribute("workersList", workers);
-
+            URL = new URL("https://adm.edu.p.lodz.pl/user/users.php?search="+inName);
+            if (!(inName==null)){
+                sendRequest();
+                model.addAttribute("workersList", workers);
+            }
         } catch (MalformedURLException e) {
             e.printStackTrace();
         }
-
         return "main";
     }
 
-    private void sendRequest() {
+    private String sendRequest() {
         HttpURLConnection con;
         try {
             con = (HttpURLConnection) URL.openConnection();
@@ -84,11 +93,12 @@ public class WorkerController {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        return "search";
     }
 
 
     @GetMapping("/createVCard/{id}")
-    public String createVCard(@PathVariable Integer id, Model model, HttpServletResponse httpServletResponse) {
+    public void createVCard(@PathVariable Integer id, Model model, HttpServletResponse httpServletResponse) {
         for (WorkerModel worker : workers) {
             if (worker.getId()==id){
                 VCard vcard = new VCard();
@@ -118,7 +128,7 @@ public class WorkerController {
             }
         }
         model.addAttribute("workersList", workers);
-        return "main";
+
     }
 
 }
