@@ -6,14 +6,8 @@ i tworzy plik z VCard, który mozesz zaimportowac do swojego telefonu.
 
 ## Jak dziala aplikacja
 Aplikacje nalezy uruchomic, oraz wejsc w przegladarce na adres http:
-http://localhost:8080/getWorkers/{name}
+http://localhost:8080/
 
-na telefonie: {adres ip serwera}:8080/getWorkers/{name}
+na telefonie: {adres ip serwera}:8080/
 
-gdzie "name" jest imieniem lub nazwiskiem które chcemy wyszukać.
-
-Na przyklad:
-http://localhost:8080/getWorkers/paweł
-
-Nastepnie znajdz plik w telefonie, z nazwą vCard_{nazwisko}.vcf i otwórz go. Wtedy mozesz zaimportowac kontakt do swoich kontaktów
-
+Następnie wpisać imię lub nazwisko lub imię i nazwisko i przycisnąć przycisk "find", po czym wyświetli się lista osób dla których możemy pobrać gotowy kontakt do importu na telefon
